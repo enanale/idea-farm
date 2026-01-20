@@ -1,0 +1,9 @@
+# Firebase Cloud Functions dependencies
+firebase-functions>=0.1.0
+firebase-admin>=6.0.0
+google-api-python-client>=2.0.0
+google-cloud-aiplatform>=1.38.0
+trafilatura>=1.6.0
+youtube-transcript-api>=0.6.0
+lxml_html_clean
+requests>=2.0.0
