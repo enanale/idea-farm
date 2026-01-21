@@ -38,7 +38,7 @@ export default function Home() {
     return () => unsubscribe();
   }, [selectedTopic]);
 
-  const handleIdeaCreated = (newIdea: Idea) => {
+  const handleIdeaCreated = () => {
     // Subscription handles the update automatically
   };
 

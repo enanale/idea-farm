@@ -2,7 +2,7 @@
  * Idea Form Component - Capture new ideas
  */
 
-import { useState, FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { api } from '../lib/api';
 import type { Idea } from '../lib/api';
 
@@ -18,7 +18,7 @@ export default function IdeaForm({ onIdeaCreated }: IdeaFormProps) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
-    
+
     setError('');
     setLoading(true);
 
@@ -27,7 +27,9 @@ export default function IdeaForm({ onIdeaCreated }: IdeaFormProps) {
       onIdeaCreated(response.idea);
       setContent('');
     } catch (err) {
-      setError('Failed to save idea');
+      console.error('Error saving idea:', err);
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to save idea: ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -50,9 +52,9 @@ export default function IdeaForm({ onIdeaCreated }: IdeaFormProps) {
             {isUrl ? '🔗 URL detected' : '💭 Text idea'}
           </div>
         </div>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <button type="submit" className="btn-primary" disabled={loading || !content.trim()}>
           {loading ? 'Saving...' : 'Save Idea'}
         </button>

@@ -7,14 +7,12 @@ import {
     collection,
     addDoc,
     getDoc,
-    getDocs,
     deleteDoc,
     doc,
     query,
     where,
     orderBy,
     serverTimestamp,
-    Timestamp,
     onSnapshot
 } from 'firebase/firestore';
 import { db, auth } from './firebase';
@@ -24,10 +22,10 @@ export interface Idea {
     userId: string;
     inputType: 'url' | 'text';
     originalContent: string;
-    driveFileId?: string;
-    summary?: string;
+    driveFileId?: string | null;
+    summary?: string | null;
     suggestedLinks?: Array<{ title: string; url: string; description: string }>;
-    topic?: string;
+    topic?: string | null;
     status: 'pending' | 'processing' | 'ready' | 'failed';
     createdAt: string;
     updatedAt: string;
