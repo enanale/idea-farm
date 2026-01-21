@@ -35,17 +35,17 @@ class DriveService:
             logger.error(f"Error finding folder {folder_name}: {e}")
             return None
 
-    def upload_text_file(self, folder_id: str, title: str, content: str) -> str | None:
+    def upload_text_file(self, folder_id: str, title: str, content: str, mime_type: str = 'text/plain', extension: str = 'txt') -> str | None:
         """Uploads a text content as a file to the specified folder."""
         try:
             file_metadata = {
-                'name': f"{title}.txt",
+                'name': f"{title}.{extension}",
                 'parents': [folder_id]
             }
             
             media = MediaIoBaseUpload(
                 io.BytesIO(content.encode('utf-8')),
-                mimetype='text/plain',
+                mimetype=mime_type,
                 resumable=True
             )
             

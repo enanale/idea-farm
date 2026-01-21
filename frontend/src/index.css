@@ -677,6 +677,82 @@ textarea {
 }
 
 /* ============================================
+   Deep Dive Markdown Styles
+   ============================================ */
+
+.deep-dive {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-2xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.deep-dive h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-primary);
+}
+
+.markdown-content {
+  color: var(--color-text-primary);
+  line-height: 1.7;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
+}
+
+.markdown-content h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-sm);
+}
+
+.markdown-content h3 {
+  font-size: 1.25rem;
+}
+
+.markdown-content p {
+  margin-bottom: var(--space-md);
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: var(--space-md);
+  padding-left: var(--space-lg);
+}
+
+.markdown-content li {
+  margin-bottom: var(--space-sm);
+}
+
+.markdown-content strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.markdown-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.btn-sm {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.8rem;
+}
+
+/* ============================================
    Empty State & Loading
    ============================================ */
 

@@ -254,7 +254,20 @@ The frontend interacts directly with Firestore for all CRUD operations. No HTTP 
 | Get | `getDoc('ideas', id)` | `allow read` if owner |
 | Delete | `deleteDoc('ideas', id)` | `allow delete` if owner |
 
-### Background Triggers (Cloud Functions)
+### Google Drive (Client-Side)
+
+Instead of server-side uploads (which requires Service Account storage, unavailable in personal Gmail), we use **Client-Side Uploads** with Incremental Authorization.
+
+| Action | Function | Scope |
+|--------|----------|-------|
+| Save to Drive | `saveMarkdowntoDrive(content)` | `https://www.googleapis.com/auth/drive.file` |
+
+**Flow**:
+1. User clicks "Save to Drive".
+2. App requests `drive.file` scope via Google Identity Services (GIS).
+3. User grants permission (popup).
+4. App uploads file to Drive via REST API.
+5. App updates Firestore with `driveFileId` and `driveLink`.
 
 | Trigger | Function Name | Description |
 |---------|---------------|-------------|
@@ -457,4 +470,8 @@ idea-farm/
 4.  **Python Cloud Functions**:
     - Managing Python dependencies requires careful `requirements.txt` curation. 
     - **Vertex AI**: Requires `google-cloud-aiplatform` (not `google-generativeai`).
+
+5.  **Google Drive & Service Accounts**:
+    - **Lesson**: Service Accounts cannot upload files to personal Gmail accounts because they have 0 bytes of storage and assume ownership of created files.
+    - **Solution**: Use Client-Side Uploads involved the user's own OAuth credentials.
 

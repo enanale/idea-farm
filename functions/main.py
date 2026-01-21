@@ -95,7 +95,8 @@ def process_new_idea(event: firestore_fn.Event[firestore_fn.DocumentSnapshot]) -
         # 4. Update Firestore
         update_data = {
             "status": "ready" if "error" not in result else "failed",
-            "summary": result.get("summary"),
+            "summary": result.get("overview", result.get("summary")), # Fallback to summary
+            "detailedAnalysis": detailed_analysis, # Store markdown in Firestore too for easy display
             "topic": result.get("topic", "Uncategorized"),
             "suggestedLinks": result.get("suggestedLinks", []),
             "updatedAt": firestore.SERVER_TIMESTAMP

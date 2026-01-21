@@ -8,10 +8,11 @@ import {
     addDoc,
     getDoc,
     deleteDoc,
-    doc,
+    updateDoc,
     query,
     where,
     orderBy,
+    doc,
     serverTimestamp,
     onSnapshot
 } from 'firebase/firestore';
@@ -24,6 +25,7 @@ export interface Idea {
     originalContent: string;
     driveFileId?: string | null;
     summary?: string | null;
+    detailedAnalysis?: string | null;
     suggestedLinks?: Array<{ title: string; url: string; description: string }>;
     topic?: string | null;
     status: 'pending' | 'processing' | 'ready' | 'failed';
@@ -152,6 +154,14 @@ export const api = {
         }
 
         return { idea: convertIdea(snap.id, data) };
+    },
+
+    /**
+     * Update an idea
+     */
+    async updateIdea(id: string, updates: Partial<Idea>): Promise<void> {
+        const docRef = doc(db, 'ideas', id);
+        await updateDoc(docRef, updates);
     },
 
     /**

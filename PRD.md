@@ -76,7 +76,7 @@ Idea Farm solves this by:
 | F04 | Suggest related links | AI provides 3-5 links for further exploration |
 | F05 | Automatic topic categorization | AI assigns topics without user input |
 | F06 | List view of all ideas | Display ideas grouped by topic |
-| F07 | Detail view for each idea | Show original content, summary, and suggested links |
+| F07 | Detail view for each idea | Show overview, deep analysis, and link to Google Drive file |
 | F08 | Cross-platform access | Works on mobile and desktop browsers |
 | F09 | User authentication | Secure access to personal data |
 
@@ -86,6 +86,8 @@ Idea Farm solves this by:
 |----|-------------|-------|
 | F10 | Search across ideas | Full-text search of ideas and summaries |
 | F11 | Reminder system | Periodic nudges to revisit unread ideas |
+| F14 | Detailed Analysis | Generate a 1-2 page deep dive + overview |
+| F15 | Save to Drive | Client-side "Save to Drive" button for Markdown export |
 
 ### P2 (Nice to Have)
 
