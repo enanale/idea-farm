@@ -31,18 +31,22 @@ class AIService:
         except Exception as e:
             logger.error(f"Failed to initialize Vertex AI: {e}")
 
-    def summarize(self, content: str) -> dict:
+    def summarize(self, content: str, prompt_template: str = None) -> dict:
         """
         Generates a summary, topic, and suggested links.
+        Args:
+            content: The text to analyze
+            prompt_template: Optional custom prompt with {content} placeholder. 
+                             If None, uses internal default.
         """
         if not content or not self.model:
             return {}
 
-        prompt = f"""
+        template = prompt_template or """
         Analyze the following text and provide a structured JSON response.
         
         Text:
-        {content[:10000]}  # Truncate
+        {content}  # Truncate
         
         Output Format (JSON):
         {{
@@ -54,6 +58,17 @@ class AIService:
             ]
         }}
         """
+
+        # Format the prompt
+        # We handle simple string formatting. 
+        # Note: If reusing f-string logic from before, we must be careful with braces in JSON.
+        # The prompt above uses double braces {{ }} for JSON literal output, and {content} for injection.
+        
+        try:
+           prompt = template.format(content=content[:10000])
+        except Exception:
+           # Fallback if template is malformed, just direct concat (less safe but works for simple cases)
+           prompt = template.replace("{content}", content[:10000])
 
         try:
             responses = self.model.generate_content(

@@ -89,6 +89,7 @@ Idea Farm solves this by:
 | F15 | Auto-Save to Drive | Automatically save detailed summary to Google Drive (Background) |
 | F16 | Deletion Sync | Prompt to delete associated Drive file when deleting an Idea |
 | F17 | Seamless Auth | Split login flow (Sign-In -> Connect Drive) to bypass popup blockers and grant offline access |
+| F18 | Local Prompt Tuning | [Developer Experience] Ability to fine-tune AI prompts locally without deploying Cloud Functions |
 
 ### P2 (Nice to Have)
 
