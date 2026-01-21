@@ -6,6 +6,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
+import { getFunctions } from 'firebase/functions';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -29,6 +30,7 @@ if (typeof window !== 'undefined' && !import.meta.env.DEV) {
 // Initialize services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const functions = getFunctions(app);
 
 // Connect to emulators in development
 // if (import.meta.env.DEV) {

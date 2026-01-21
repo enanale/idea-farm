@@ -86,8 +86,9 @@ Idea Farm solves this by:
 |----|-------------|-------|
 | F10 | Search across ideas | Full-text search of ideas and summaries |
 | F11 | Reminder system | Periodic nudges to revisit unread ideas |
-| F14 | Detailed Analysis | Generate a 1-2 page deep dive + overview |
-| F15 | Save to Drive | Client-side "Save to Drive" button for Markdown export |
+| F15 | Auto-Save to Drive | Automatically save detailed summary to Google Drive (Background) |
+| F16 | Deletion Sync | Prompt to delete associated Drive file when deleting an Idea |
+| F17 | Seamless Auth | Split login flow (Sign-In -> Connect Drive) to bypass popup blockers and grant offline access |
 
 ### P2 (Nice to Have)
 

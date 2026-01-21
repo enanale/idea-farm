@@ -5,7 +5,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { useGoogleLogin } from '@react-oauth/google';
 import { api } from '../lib/api';
 import type { Idea } from '../lib/api';
 
@@ -15,7 +14,6 @@ export default function IdeaDetail() {
   const [idea, setIdea] = useState<Idea | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const loadIdea = async () => {
@@ -35,63 +33,18 @@ export default function IdeaDetail() {
   }, [id]);
 
   const handleDelete = async () => {
-    if (!id || !confirm('Are you sure you want to delete this idea?')) return;
-
-    try {
-      await api.deleteIdea(id);
-      navigate('/');
-    } catch (err) {
-      setError('Failed to delete idea');
+    if (!idea) return;
+    if (confirm('Are you sure you want to delete this idea? This will also remove the file from Google Drive.')) {
+      try {
+        await api.deleteIdea(idea.id);
+        navigate('/');
+      } catch (err) {
+        setError('Failed to delete idea');
+      }
     }
   };
 
-  const uploadToDrive = async (accessToken: string) => {
-    if (!idea || !idea.detailedAnalysis) return;
-    setUploading(true);
-
-    try {
-      // For Markdown file in Drive
-      const fileMetadata = {
-        name: `Idea Farm: ${idea.topic || 'Analysis'}.md`,
-        mimeType: 'text/markdown'
-      };
-
-      const form = new FormData();
-      form.append('metadata', new Blob([JSON.stringify(fileMetadata)], { type: 'application/json' }));
-      form.append('file', new Blob([idea.detailedAnalysis], { type: 'text/markdown' }));
-
-      const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: form,
-      });
-
-      if (!res.ok) throw new Error('Upload failed');
-
-      const data = await res.json();
-      const driveFileId = data.id;
-
-      // Persist to Firestore
-      await api.updateIdea(idea.id, { driveFileId });
-
-      // Update local state
-      setIdea({ ...idea, driveFileId });
-      alert('Saved to Drive successfully!');
-
-    } catch (e) {
-      console.error('Upload error', e);
-      alert('Failed to save to Drive.');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const loginToDrive = useGoogleLogin({
-    onSuccess: (codeResponse) => uploadToDrive(codeResponse.access_token),
-    scope: 'https://www.googleapis.com/auth/drive.file',
-  });
+  // Removed manual upload logic (handled by backend)
 
   if (loading) {
     return <div className="loading-page">Loading...</div>;
@@ -155,14 +108,10 @@ export default function IdeaDetail() {
                 >
                   📄 View in Drive
                 </a>
-              ) : idea.detailedAnalysis && (
-                <button
-                  onClick={() => loginToDrive()}
-                  className="btn-primary btn-sm"
-                  disabled={uploading}
-                >
-                  {uploading ? 'Saving...' : '💾 Save to Drive'}
-                </button>
+              ) : (
+                <span className="drive-status-badge">
+                  {idea.createdAt ? 'Backend Uploading...' : 'Syncing...'}
+                </span>
               )}
             </div>
             <div className="summary-content">

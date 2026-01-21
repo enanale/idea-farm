@@ -23,26 +23,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
 
-  if (loading) {
-    return <div className="loading-page">Loading...</div>;
-  }
-
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <>{children}</>;
-}
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={
-        <PublicRoute><Login /></PublicRoute>
-      } />
+      <Route path="/login" element={<Login />} />
       <Route path="/" element={
         <ProtectedRoute><Home /></ProtectedRoute>
       } />

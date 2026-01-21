@@ -23,7 +23,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 const googleProvider = new GoogleAuthProvider();
-googleProvider.addScope('https://www.googleapis.com/auth/drive.file');
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

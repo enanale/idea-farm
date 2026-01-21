@@ -254,20 +254,23 @@ The frontend interacts directly with Firestore for all CRUD operations. No HTTP 
 | Get | `getDoc('ideas', id)` | `allow read` if owner |
 | Delete | `deleteDoc('ideas', id)` | `allow delete` if owner |
 
-### Google Drive (Client-Side)
+### Google Drive (Offline/Server-Side via User Credentials)
 
-Instead of server-side uploads (which requires Service Account storage, unavailable in personal Gmail), we use **Client-Side Uploads** with Incremental Authorization.
-
-| Action | Function | Scope |
-|--------|----------|-------|
-| Save to Drive | `saveMarkdowntoDrive(content)` | `https://www.googleapis.com/auth/drive.file` |
+We implement **Offline Access** to allow the backend (Cloud Functions) to act on behalf of the user without constant client-side interaction.
 
 **Flow**:
-1. User clicks "Save to Drive".
-2. App requests `drive.file` scope via Google Identity Services (GIS).
-3. User grants permission (popup).
-4. App uploads file to Drive via REST API.
-5. App updates Firestore with `driveFileId` and `driveLink`.
+1.  **Auth (Frontend)**: User logs in and grants `drive.file` scope + `offline_access`.
+2.  **Code Exchange**: Frontend sends the **Auth Code** to a Cloud Function (`exchange_auth_code`).
+3.  **Token Storage**: Backend exchanges code for **Access Token** + **Refresh Token**.
+4.  **Encryption**: Refresh Token is **Encrypted** (AES-GCM) using a key from Google Cloud Secret Manager (or ENV for MVP) and stored in a secure Firestore collection (`users/{uid}/params/secrets`).
+5.  **Background Operation**:
+    - `process_new_idea` retrieves the encrypted token.
+    - Decrypts and refreshes access token.
+    - Uploads file and updates `idea.driveFileId`.
+
+**Security Constraints**:
+- `users/{uid}/params/secrets` must have `allow read, write: if false;` in Firestore Rules (Backend Admin SDK only).
+- Encryption Key must never be committed to repo.
 
 | Trigger | Function Name | Description |
 |---------|---------------|-------------|

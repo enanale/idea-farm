@@ -36,6 +36,7 @@ Access your ideas from any device through a responsive web interface.
 - ✅ URL Capture & Extraction (Trafilatura)
 - ✅ Vertex AI Summarization (Gemini 2.5 Flash)
 - ✅ Real-time UI Updates (Firestore Listeners)
+- ✅ **Secure Offline Access**: Automatic background saving to Google Drive with synchronized deletion.
 - ⚠️ Bot Protection: Basic User-Agent spoofing implemented; some sites (e.g. OpenAI) may still block extraction.
 
 ## Development Setup
