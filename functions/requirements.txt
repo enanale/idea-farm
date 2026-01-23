@@ -34,7 +34,7 @@ google-cloud-resource-manager==1.16.0
 google-cloud-storage==3.8.0
 google-crc32c==1.8.0
 google-events==0.5.0
-google-genai==1.59.0
+google-genai
 google-resumable-media==2.8.0
 googleapis-common-protos==1.72.0
 grpc-google-iam-v1==0.14.3

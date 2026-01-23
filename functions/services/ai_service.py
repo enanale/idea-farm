@@ -1,31 +1,65 @@
 """
 AI Service (Vertex AI)
 
-Handles interaction with Google Gemini via Vertex AI.
-Uses Application Default Credentials (ADC) - No API Key required.
+Handles interaction with Google Gemini via the Google Gen AI SDK.
+Uses Application Default Credentials (ADC).
 """
 
 import logging
 import os
 import json
-import vertexai
-from vertexai.generative_models import GenerativeModel
-from google.auth import default
+from google import genai
+from google.genai.types import Tool, GoogleSearch, GenerateContentConfig, SafetySetting
 
 logger = logging.getLogger(__name__)
 
+default_prompt_template = """
+Analyze the following text and provide a structured JSON response. The content is 
+for a notebook for learning and inspiration.  Provide any supplemental information
+that would be appriate. I do want you to process the text differently,
+depending on the content.
+
+- If it is the content of a website, I want you to focus on the content. provide
+and interesting background information for someone wanting to learn more
+
+- If it is a YouTube transcript, I want you to focus on the content. provide
+and interesting background information about the content creator as well
+
+-If it is an idea or short sentence or sentence fragment, do some research on
+the topic and provide a primer on the topic
+
+- If it is a recipe, I want you to focus on the ingredients and directions.
+Do include a paragraph that summarizes the narrative.
+
+- if it is an ecommerce site for a product, ignore the text related to the storefront
+and focus on the product or item and its features.
+
+for Suggested links, provide exact, clickable links that are relevant to the content and provide a 
+brief description of why the link is relevant.
+
+Text:
+{content}  # Truncate
+
+Output Format (JSON):
+{{
+    "overview": "A concise paragraph summary (3-5 sentences) suitable for quick reading.",
+    "detailedAnalysis": "A comprehensive, 1-2 page deep dive into the content. Use Markdown formatting (## Headers, - bullets, **bold**). Highlight key insights, arguments, and context.",
+    "topic": "Suggested Category",
+    "suggestedLinks": [
+        {{ "title": "Link Title", "url": "https://example.com", "description": "Why relevant" }}
+    ]
+}}
+"""
+
 class AIService:
     def __init__(self):
-        self.model = None
+        self.client = None
         try:
-            # Initialize Vertex AI
-            # Cloud Functions usually provide project_id in environment or metadata
+            # Initialize Vertex AI Client
             project_id = os.environ.get('GCLOUD_PROJECT') or os.environ.get('GCP_PROJECT') or 'idea-farm-70752'
             location = os.environ.get('FUNCTION_REGION') or 'us-central1'
             
-            vertexai.init(project=project_id, location=location)
-            
-            self.model = GenerativeModel("gemini-2.5-flash")
+            self.client = genai.Client(vertexai=True, project=project_id, location=location)
             logger.info(f"AI Service initialized for project {project_id} in {location}")
             
         except Exception as e:
@@ -34,64 +68,65 @@ class AIService:
     def summarize(self, content: str, prompt_template: str = None) -> dict:
         """
         Generates a summary, topic, and suggested links.
-        Args:
-            content: The text to analyze
-            prompt_template: Optional custom prompt with {content} placeholder. 
-                             If None, uses internal default.
         """
-        if not content or not self.model:
+        if not content or not self.client:
             return {}
 
-        template = prompt_template or """
-        Analyze the following text and provide a structured JSON response.
-        
-        Text:
-        {content}  # Truncate
-        
-        Output Format (JSON):
-        {{
-            "overview": "A concise paragraph summary (3-5 sentences) suitable for quick reading.",
-            "detailedAnalysis": "A comprehensive, 1-2 page deep dive into the content. Use Markdown formatting (## Headers, - bullets, **bold**). Highlight key insights, arguments, and context.",
-            "topic": "Suggested Category",
-            "suggestedLinks": [
-                {{ "title": "Link Title", "url": "https://example.com", "description": "Why relevant" }}
-            ]
-        }}
-        """
+        template = prompt_template or default_prompt_template
 
-        # Format the prompt
-        # We handle simple string formatting. 
-        # Note: If reusing f-string logic from before, we must be careful with braces in JSON.
-        # The prompt above uses double braces {{ }} for JSON literal output, and {content} for injection.
-        
         try:
            prompt = template.format(content=content[:10000])
         except Exception:
-           # Fallback if template is malformed, just direct concat (less safe but works for simple cases)
            prompt = template.replace("{content}", content[:10000])
 
         try:
-            responses = self.model.generate_content(
-                prompt,
-                generation_config={
-                    "temperature": 0.2,
-                    "max_output_tokens": 8192,
-                    "top_p": 0.8,
-                    "top_k": 40,
-                    "response_mime_type": "application/json"
-                },
-                stream=False
+            # Configure Google Search Grounding
+            # Using the new SDK's Tool and GoogleSearch definitions
+            search_tool = Tool(
+                google_search=GoogleSearch()
+            )
+
+            # Define Safety Settings
+            safety_settings = [
+                SafetySetting(
+                    category="HARM_CATEGORY_HATE_SPEECH",
+                    threshold="BLOCK_ONLY_HIGH",
+                ),
+                SafetySetting(
+                    category="HARM_CATEGORY_DANGEROUS_CONTENT",
+                    threshold="BLOCK_ONLY_HIGH",
+                ),
+                SafetySetting(
+                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    threshold="BLOCK_ONLY_HIGH",
+                ),
+                SafetySetting(
+                    category="HARM_CATEGORY_HARASSMENT",
+                    threshold="BLOCK_ONLY_HIGH",
+                ),
+            ]
+
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=GenerateContentConfig(
+                    tools=[search_tool],
+                    safety_settings=safety_settings,
+                    temperature=1.0,
+                    max_output_tokens=8192,
+                    top_p=0.8,
+                    top_k=40
+                )
             )
             
-            text = responses.text
+            text = response.text
             logger.info(f"🤖 [Vertex AI] Raw Response: {text}")
 
-            # Cleanup markdown (still safe to keep)
             text = text.replace('```json', '').replace('```', '').strip()
-            
             return json.loads(text)
+
         except Exception as e:
-            logger.exception(f"❌ [Vertex AI] Summarization Critical Failure: {e}") # Full stack trace
+            logger.exception(f"❌ [Vertex AI] Summarization Critical Failure: {e}")
             return {
                 "summary": "AI Summarization failed.",
                 "topic": "Uncategorized",

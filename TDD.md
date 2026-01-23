@@ -80,7 +80,7 @@ We evaluated two Firebase-native approaches for AI integration:
 | **Primary Use Case** | Server-side orchestration, complex flows, custom models | Client-side features (chat, personalization) |
 | **Execution Environment** | Server (Node.js/Go/Python) | Client (Browser/Mobile) |
 | **Control** | Full backend control, secure, observable | Fast feedback, less infra, but less control |
-| **Model Support** | Broad (Google, OpenAI, Anthropic, Custom) | Vertex AI (Gemini, Imagen) |
+| **Model Support** | Broad (Google, OpenAI, Anthropic, Custom) | Vertex AI (Gemini 2.5 Flash, Gemini Pro, Imagen) |
 | **Data Handling** | Good for complex RAG, scraping, heavy processing | Good for direct user interaction |
 
 **Decision: Server-Side Logic (Python Cloud Functions)**
@@ -98,11 +98,12 @@ We chose a **Server-Side approach** (functionally similar to Genkit, implemented
 
 | Component | Technology | Rationale |
 |-----------|------------|-----------|
-| LLM Provider | **Vertex AI (Gemini Pro)** | Enterprise-grade reliability, IAM auth (no API keys), Python SDK |
+| LLM Provider | **Vertex AI (Gemini 2.5 Flash)** | Fast, cost-effective, supports **Google Search Grounding**. |
 | Content Extraction | Trafilatura | Python library for extracting article content from URLs |
 | Video Transcripts | youtube-transcript-api | Python library for YouTube transcript extraction |
 | **Bot Filter Bypass** | **Requests + User-Agent Spoofing** | Many sites (e.g., OpenAI, NYT) block default Python user agents. We use `requests` with a browser-mimicking UA to fetch HTML before passing to Trafilatura. |
-| **Error Handling** | **System Prompt fallback** | If extraction fails (e.g., persistent 403), the error is injected into the AI prompt so the summary explicitly states "Content Extraction Failed" rather than hallucinating. |
+| **Grounding** | **Google Search** | Model uses Google Search to find context for vague queries ("ideas") or specific topics (YouTube creators). |
+| **Safety Settings** | **BLOCK_ONLY_HIGH** | Adjusted to prevent over-filtering of legitimate content while maintaining safety. |
 
 **Alternatives Considered**:
 - **Firebase AI Logic (Client SDK)**: Rejected because client-side scraping is not feasible due to CORS.

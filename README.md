@@ -34,9 +34,10 @@ Access your ideas from any device through a responsive web interface.
 
 **Current Status**: Functional MVP (v1.0)
 - ✅ URL Capture & Extraction (Trafilatura)
-- ✅ Vertex AI Summarization (Gemini 2.5 Flash)
+- ✅ Vertex AI Summarization (Gemini 2.5 Flash w/ Google Search Grounding)
 - ✅ Real-time UI Updates (Firestore Listeners)
 - ✅ **Secure Offline Access**: Automatic background saving to Google Drive with synchronized deletion.
+- ✅ **Colab Prompt Tuning**: Browser-based playground for refining AI prompts and extraction logic.
 - ⚠️ Bot Protection: Basic User-Agent spoofing implemented; some sites (e.g. OpenAI) may still block extraction.
 
 ## Development Setup
@@ -56,6 +57,10 @@ Access your ideas from any device through a responsive web interface.
    # In another terminal:
    cd frontend && npm run dev
    ```
+
+4. **Prompt Tuning**:
+   - Open `functions/prompt_tuning.ipynb` in VS Code or Google Colab.
+   - Run the notebook to test extraction and AI generation on real URLs.
 
 ## Deployment
 

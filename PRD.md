@@ -72,7 +72,7 @@ Idea Farm solves this by:
 |----|-------------|-------|
 | F01 | Capture ideas via URL | Support web articles, videos (YouTube), and general links |
 | F02 | Capture ideas via plain text | Free-form text input for ideas heard in conversation |
-| F03 | Generate one-page summary | AI summarizes the content or researches the topic |
+| F03 | Generate one-page summary | AI summarizes content using **Google Search Grounding** for context |
 | F04 | Suggest related links | AI provides 3-5 links for further exploration |
 | F05 | Automatic topic categorization | AI assigns topics without user input |
 | F06 | List view of all ideas | Display ideas grouped by topic |
@@ -89,7 +89,7 @@ Idea Farm solves this by:
 | F15 | Auto-Save to Drive | Automatically save detailed summary to Google Drive (Background) |
 | F16 | Deletion Sync | Prompt to delete associated Drive file when deleting an Idea |
 | F17 | Seamless Auth | Split login flow (Sign-In -> Connect Drive) to bypass popup blockers and grant offline access |
-| F18 | Local Prompt Tuning | [Developer Experience] Ability to fine-tune AI prompts locally without deploying Cloud Functions |
+| F18 | Colab Prompt Tuning | [Developer Experience] Dedicated notebook for tuning prompts and grounding logic |
 
 ### P2 (Nice to Have)
 
